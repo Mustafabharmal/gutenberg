@@ -479,12 +479,20 @@ export const initializeMetaBoxes =
 
 		metaBoxesInitialized = true;
 
-		// Save metaboxes on save completion, except for autosaves.
+		// Save metaboxes on save completion, except for autosaves or revision
+		// restores. When restoring a revision the meta values are applied via
+		// the REST API; re-submitting classic meta box form fields at that
+		// point would overwrite the restored meta with the current (stale)
+		// form values.
 		addAction(
 			'editor.savePost',
 			'core/edit-post/save-metaboxes',
 			async ( post, options ) => {
-				if ( ! options.isAutosave && select.hasMetaBoxes() ) {
+				if (
+					! options.isAutosave &&
+					! options.isRevisionsRestore &&
+					select.hasMetaBoxes()
+				) {
 					await dispatch.requestMetaBoxUpdates();
 				}
 			}

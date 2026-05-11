@@ -702,7 +702,11 @@ export const restoreRevision =
 		dispatch.setCurrentRevisionId( null );
 
 		// Save the post to persist the restored revision.
-		await dispatch.savePost();
+		// Pass `isRevisionsRestore` so that meta box re-submission is skipped;
+		// otherwise classic meta box form fields (containing the current, not
+		// the restored, values) would be re-submitted and overwrite the
+		// revision's meta values that were just applied.
+		await dispatch.savePost( { isRevisionsRestore: true } );
 
 		// Show success notice.
 		registry.dispatch( noticesStore ).createSuccessNotice(
