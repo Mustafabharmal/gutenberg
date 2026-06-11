@@ -36,6 +36,7 @@ import { NAVIGATION_OVERLAY_TEMPLATE_PART_AREA } from '../constants';
  * @param {Function} props.onNavigateToEntityRecord Function to navigate to template part editor.
  * @param {boolean}  props.isCreatingOverlay        Whether an overlay is being created (lifted state).
  * @param {Function} props.setIsCreatingOverlay     Function to set creating overlay state (lifted state).
+ * @param {Object}   props.navigationAttributes     Color and typography attributes to pass when creating.
  * @return {React.JSX.Element} The overlay template part selector component.
  */
 export default function OverlayTemplatePartSelector( {
@@ -45,6 +46,7 @@ export default function OverlayTemplatePartSelector( {
 	onNavigateToEntityRecord,
 	isCreatingOverlay,
 	setIsCreatingOverlay,
+	navigationAttributes,
 } ) {
 	const headingId = useInstanceId(
 		OverlayTemplatePartSelector,
@@ -181,7 +183,8 @@ export default function OverlayTemplatePartSelector( {
 		try {
 			setIsCreating( true );
 
-			const templatePart = await createOverlayTemplatePart();
+			const templatePart =
+				await createOverlayTemplatePart( navigationAttributes );
 
 			setAttributes( {
 				overlay: templatePart.slug,
@@ -230,6 +233,7 @@ export default function OverlayTemplatePartSelector( {
 		currentTheme,
 		setIsCreating,
 		overlayMenu,
+		navigationAttributes,
 	] );
 
 	const handleClearOverlay = useCallback( () => {

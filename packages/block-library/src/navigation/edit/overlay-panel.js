@@ -33,6 +33,7 @@ import OverlayPreview from './overlay-preview';
  * @param {boolean}  props.isResponsive              Whether overlay menu is responsive.
  * @param {string}   props.currentTheme              Current theme stylesheet name.
  * @param {boolean}  props.hasOverlays               Whether any overlay template parts exist.
+ * @param {Object}   props.navigationAttributes      Color and typography attributes to pass when creating.
  * @return {React.JSX.Element}                       The overlay panel component or null if overlay is disabled.
  */
 export default function OverlayPanel( {
@@ -49,6 +50,7 @@ export default function OverlayPanel( {
 	isResponsive,
 	currentTheme,
 	hasOverlays,
+	navigationAttributes,
 } ) {
 	const [ isCreatingOverlay, setIsCreatingOverlay ] = useState( false );
 
@@ -81,6 +83,7 @@ export default function OverlayPanel( {
 						onNavigateToEntityRecord={ onNavigateToEntityRecord }
 						isCreatingOverlay={ isCreatingOverlay }
 						setIsCreatingOverlay={ setIsCreatingOverlay }
+						navigationAttributes={ navigationAttributes }
 					/>
 				) }
 

@@ -32,46 +32,71 @@ export default function useCreateOverlayTemplatePart( overlayTemplateParts ) {
 		[]
 	);
 
-	const createOverlayTemplatePart = useCallback( async () => {
-		// Generate unique name using only overlay area template parts
-		// Filter to only include template parts with titles for uniqueness check
-		const templatePartsWithTitles = overlayTemplateParts.filter(
-			( templatePart ) => templatePart.title?.rendered
-		);
-		const uniqueTitle = getUniqueTemplatePartTitle(
-			__( 'Navigation Overlay' ),
-			templatePartsWithTitles
-		);
-		const cleanSlug = getCleanTemplatePartSlug( uniqueTitle );
+	const createOverlayTemplatePart = useCallback(
+		async ( attributesToMerge = {} ) => {
+			// Generate unique name using only overlay area template parts
+			// Filter to only include template parts with titles for uniqueness check
+			const templatePartsWithTitles = overlayTemplateParts.filter(
+				( templatePart ) => templatePart.title?.rendered
+			);
+			const uniqueTitle = getUniqueTemplatePartTitle(
+				__( 'Navigation Overlay' ),
+				templatePartsWithTitles
+			);
+			const cleanSlug = getCleanTemplatePartSlug( uniqueTitle );
 
-		let initialContent = '';
+			let initialContent = '';
 
-		if ( pattern?.content ) {
-			// Parse the pattern content into blocks and serialize it
-			const blocks = parse( pattern.content, {
-				__unstableSkipMigrationLogs: true,
-			} );
-			initialContent = serialize( blocks );
-		} else {
-			// Fallback to empty paragraph if pattern is not found
-			initialContent = serialize( [ createBlock( 'core/paragraph' ) ] );
-		}
+			if ( pattern?.content ) {
+				// Parse the pattern content into blocks and serialize it
+				const blocks = parse( pattern.content, {
+					__unstableSkipMigrationLogs: true,
+				} );
 
-		// Create the template part
-		const templatePart = await saveEntityRecord(
-			'postType',
-			'wp_template_part',
-			{
-				slug: cleanSlug,
-				title: uniqueTitle,
-				content: initialContent,
-				area: NAVIGATION_OVERLAY_TEMPLATE_PART_AREA,
-			},
-			{ throwOnError: true }
-		);
+				// If we have attributes to merge (like color/typography from the parent),
+				// apply them to the root group block so the overlay starts with those styles.
+				if (
+					blocks.length > 0 &&
+					blocks[ 0 ].name === 'core/group' &&
+					Object.keys( attributesToMerge ).length > 0
+				) {
+					// Clean up any undefined values before merging
+					const cleanAttributesToMerge = Object.fromEntries(
+						Object.entries( attributesToMerge ).filter(
+							( [ , v ] ) => v !== undefined
+						)
+					);
+					blocks[ 0 ].attributes = {
+						...blocks[ 0 ].attributes,
+						...cleanAttributesToMerge,
+					};
+				}
 
-		return templatePart;
-	}, [ overlayTemplateParts, saveEntityRecord, pattern ] );
+				initialContent = serialize( blocks );
+			} else {
+				// Fallback to empty paragraph if pattern is not found
+				initialContent = serialize( [
+					createBlock( 'core/paragraph' ),
+				] );
+			}
+
+			// Create the template part
+			const templatePart = await saveEntityRecord(
+				'postType',
+				'wp_template_part',
+				{
+					slug: cleanSlug,
+					title: uniqueTitle,
+					content: initialContent,
+					area: NAVIGATION_OVERLAY_TEMPLATE_PART_AREA,
+				},
+				{ throwOnError: true }
+			);
+
+			return templatePart;
+		},
+		[ overlayTemplateParts, saveEntityRecord, pattern ]
+	);
 
 	return createOverlayTemplatePart;
 }

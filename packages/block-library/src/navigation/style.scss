@@ -710,6 +710,21 @@ button.wp-block-navigation-item__content {
 				.wp-block-navigation__overlay-container {
 					display: block;
 
+					// Explicitly inherit color and typography from the parent navigation
+					// block so that unsetting a style on the overlay's wrapper block
+					// reveals the nav block's value, matching frontend CSS cascade behaviour.
+					// On the frontend the overlay is a DOM descendant of nav.wp-block-navigation
+					// so these properties cascade naturally; making them explicit here documents
+					// the intent and guards against editor style resets interrupting the cascade.
+					color: inherit;
+					font-size: inherit;
+					font-style: inherit;
+					font-weight: inherit;
+					letter-spacing: inherit;
+					text-transform: inherit;
+					line-height: inherit;
+					font-family: inherit;
+
 					.wp-block-navigation__submenu-container {
 						right: auto;
 						left: 0;

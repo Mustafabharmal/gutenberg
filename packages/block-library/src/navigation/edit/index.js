@@ -574,6 +574,18 @@ function Navigation( {
 
 	const textDecoration = attributes.style?.typography?.textDecoration;
 
+	// Gather color and typography attributes to pass to the overlay template part
+	// when creating it, so the overlay starts with the same styles as the parent.
+	const navigationAttributes = {
+		textColor: attributes.textColor,
+		customTextColor: attributes.customTextColor,
+		backgroundColor: attributes.backgroundColor,
+		customBackgroundColor: attributes.customBackgroundColor,
+		style: attributes.style,
+		fontSize: attributes.fontSize,
+		customFontSize: attributes.customFontSize,
+	};
+
 	const hasBlockOverlay = useSelect(
 		( select ) =>
 			select( blockEditorStore ).__unstableHasActiveBlockOverlayActive(
@@ -933,6 +945,7 @@ function Navigation( {
 						isResponsive={ isResponsive }
 						currentTheme={ currentTheme }
 						hasOverlays={ hasOverlays }
+						navigationAttributes={ navigationAttributes }
 					/>
 				</InspectorControls>
 			) }
