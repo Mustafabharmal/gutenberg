@@ -112,6 +112,7 @@ function VisualEditor( {
 		isPreview,
 		styles,
 		hasCanvasWidth,
+		supportsTemplateMode,
 	} = useSelect( ( select ) => {
 		const {
 			getCurrentPostId,
@@ -134,7 +135,7 @@ function VisualEditor( {
 		}
 
 		const editorSettings = getEditorSettings();
-		const supportsTemplateMode = editorSettings.supportsTemplateMode;
+		const _supportsTemplateMode = editorSettings.supportsTemplateMode;
 		const postTypeObject = getPostType( postTypeSlug );
 		const currentTemplateId = getCurrentTemplateId();
 		const template = currentTemplateId
@@ -152,7 +153,7 @@ function VisualEditor( {
 			// Post template fetch returns a 404 on classic themes, which
 			// messes with e2e tests, so check it's a block theme first.
 			editedPostTemplate:
-				postTypeObject?.viewable && supportsTemplateMode
+				postTypeObject?.viewable && _supportsTemplateMode
 					? template
 					: undefined,
 			wrapperBlockName: _wrapperBlockName,
@@ -163,6 +164,7 @@ function VisualEditor( {
 			isPreview: editorSettings.isPreviewMode,
 			styles: editorSettings.styles,
 			hasCanvasWidth: getCanvasWidth() !== undefined,
+			supportsTemplateMode: _supportsTemplateMode,
 		};
 	}, [] );
 	const { isCleanNewPost } = useSelect( editorStore );
@@ -471,8 +473,9 @@ function VisualEditor( {
 						<BlockList
 							className={ clsx(
 								'is-' + deviceType.toLowerCase() + '-preview',
-								renderingMode !== 'post-only' ||
-									isDesignPostType
+								( renderingMode !== 'post-only' ||
+									isDesignPostType ) &&
+									supportsTemplateMode
 									? 'wp-site-blocks'
 									: `${ blockListLayoutClass } wp-block-post-content`, // Ensure root level blocks receive default/flow blockGap styling rules.
 								{
