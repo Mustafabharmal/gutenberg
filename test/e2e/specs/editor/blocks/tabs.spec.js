@@ -180,6 +180,26 @@ test.describe( 'Tabs', () => {
 			await expect( tabs ).toHaveCount( 2 );
 		} );
 
+		test( 'inserts a new tab after the active tab when using the toolbar Add tab button', async ( {
+			editor,
+		} ) => {
+			const tab1 = editor.canvas.getByRole( 'tab', { name: 'Tab 1' } );
+			await tab1.click();
+			await expect( tab1 ).toHaveAttribute( 'aria-selected', 'true' );
+
+			await editor.clickBlockToolbarButton( 'Add tab' );
+
+			// The new tab is inserted right after the active tab, not at the end.
+			await expect( editor.canvas.getByRole( 'tab' ) ).toHaveText( [
+				'Tab 1',
+				'Tab',
+				'Tab 2',
+			] );
+
+			const newTab = editor.canvas.getByRole( 'tab' ).nth( 1 );
+			await expect( newTab ).toHaveAttribute( 'aria-selected', 'true' );
+		} );
+
 		test( 'removes the tab and activates the previous one when pressing Delete on an empty tab label', async ( {
 			editor,
 			page,

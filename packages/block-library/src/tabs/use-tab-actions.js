@@ -50,14 +50,17 @@ export default function useTabActions( tabsClientId ) {
 		};
 	};
 
-	// Insert a new tab and make it active. Defaults to appending at the end.
+	// Insert a new tab and make it active. Defaults to inserting right after
+	// the currently active tab, falling back to the end if there is none.
 	const insertTab = ( atIndex ) => {
-		const { tabPanelsClientId, tabPanelBlocks } = getTabsState();
+		const { tabPanelsClientId, tabPanelBlocks, activeIndex } =
+			getTabsState();
 		if ( ! tabPanelsClientId ) {
 			return;
 		}
 
-		const newIndex = atIndex ?? tabPanelBlocks.length;
+		const newIndex =
+			atIndex ?? Math.min( activeIndex + 1, tabPanelBlocks.length );
 		insertBlock(
 			createBlock( 'core/tab-panel', { label: __( 'Tab' ) } ),
 			newIndex,
