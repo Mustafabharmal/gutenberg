@@ -118,6 +118,28 @@ describe( 'design token fallback build plugin parity', () => {
 		);
 	} );
 
+	it( 'leaves var() text inside CSS strings untouched in PostCSS and Lightning CSS', async () => {
+		const filename = join( fixturesDirectory, 'styles.css' );
+		const source = await readFile( filename, 'utf8' );
+		const postcssResult = await postcss( [ postcssPlugin ] ).process(
+			source,
+			{ from: filename }
+		);
+		const lightningcssResult = transformWithLightningcss(
+			source,
+			filename
+		);
+
+		// `content` holds a quoted string, not a real var() reference, so
+		// neither tool should inject a fallback into it.
+		expect( postcssResult.css ).toContain(
+			'content: "var(--wpds-border-radius-sm)";'
+		);
+		expect( lightningcssResult ).toContain(
+			'content: "var(--wpds-border-radius-sm)";'
+		);
+	} );
+
 	it( 'leaves an empty var() fallback untouched in PostCSS', async () => {
 		const source = await readFile( emptyFallbackCssFixture, 'utf8' );
 		const result = await postcss( [ postcssPlugin ] ).process( source, {

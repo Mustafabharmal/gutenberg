@@ -99,6 +99,66 @@ describe( 'addFallbackToVar', () => {
 		expect( second ).toBe( first );
 	} );
 
+	describe( 'skipStrings', () => {
+		it( 'leaves var()-like text inside a double-quoted string untouched', () => {
+			expect(
+				addFallbackToVar(
+					'"var(--wpds-border-radius-sm)"',
+					mockFallbacks
+				)
+			).toBe( '"var(--wpds-border-radius-sm)"' );
+		} );
+
+		it( 'leaves var()-like text inside a single-quoted string untouched', () => {
+			expect(
+				addFallbackToVar(
+					"'var(--wpds-border-radius-sm)'",
+					mockFallbacks
+				)
+			).toBe( "'var(--wpds-border-radius-sm)'" );
+		} );
+
+		it( 'still injects fallbacks outside of strings', () => {
+			expect(
+				addFallbackToVar(
+					'"var(--wpds-dimension-gap-sm)" var(--wpds-dimension-gap-lg)',
+					mockFallbacks
+				)
+			).toBe(
+				'"var(--wpds-dimension-gap-sm)" var(--wpds-dimension-gap-lg, 16px)'
+			);
+		} );
+
+		it( 'respects escaped quotes when skipping a string', () => {
+			expect(
+				addFallbackToVar(
+					'"he said \\"var(--wpds-dimension-gap-sm)\\"" var(--wpds-dimension-gap-lg)',
+					mockFallbacks
+				)
+			).toBe(
+				'"he said \\"var(--wpds-dimension-gap-sm)\\"" var(--wpds-dimension-gap-lg, 16px)'
+			);
+		} );
+
+		it( 'does not throw for an unknown token inside a string', () => {
+			expect(
+				addFallbackToVar( '"var(--wpds-nonexistent)"', mockFallbacks )
+			).toBe( '"var(--wpds-nonexistent)"' );
+		} );
+
+		it( 'rewrites inside strings when disabled, for JS/TS source', () => {
+			expect(
+				addFallbackToVar(
+					"const style = { borderRadius: 'var(--wpds-border-radius-sm)' };",
+					mockFallbacks,
+					{ skipStrings: false }
+				)
+			).toBe(
+				"const style = { borderRadius: 'var(--wpds-border-radius-sm, 2px)' };"
+			);
+		} );
+	} );
+
 	describe( 'escapeQuotes', () => {
 		it( 'does not escape quotes by default', () => {
 			expect(

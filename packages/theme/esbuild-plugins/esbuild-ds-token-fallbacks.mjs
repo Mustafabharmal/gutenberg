@@ -40,7 +40,17 @@ const plugin = {
 			const ext = args.path.match( /(\.[^.]+)$/ )?.[ 1 ] || '.js';
 
 			return {
-				contents: addFallbackToVar( source, { escapeQuotes: true } ),
+				contents: addFallbackToVar( source, {
+					escapeQuotes: true,
+					// Quotes in JS source delimit JS strings, which is
+					// where CSS values live. Skipping quoted text here
+					// would drop fallbacks from ordinary CSS-in-JS such
+					// as `gap: 'var(--wpds-dimension-gap-sm)'`, so the
+					// rare `var()`-like text inside a CSS string nested
+					// in a JS string is knowingly still rewritten.
+					// Telling the two apart would require parsing the JS.
+					skipStrings: false,
+				} ),
 				loader: LOADER_MAP[ ext ] || 'jsx',
 			};
 		} );

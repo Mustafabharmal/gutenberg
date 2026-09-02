@@ -22,6 +22,13 @@ import { addFallbackToVar as _addFallbackToVar } from './add-fallback-to-var.mjs
  *                                         literals. JS will unescape them at
  *                                         parse time, so the browser's CSS
  *                                         engine still sees the correct value.
+ * @param {boolean} [options.skipStrings]  When true (the default), quoted CSS
+ *                                         strings are left untouched, so
+ *                                         `var()`-like text inside them is not
+ *                                         rewritten. Set to false when the
+ *                                         input is JS/TS source, where the
+ *                                         quotes are JS syntax rather than CSS
+ *                                         string delimiters.
  * @return {string}                        The value with fallbacks injected.
  */
 export function addFallbackToVar( cssValue, options ) {
