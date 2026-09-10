@@ -9,6 +9,7 @@ import {
 import { unlock } from '../../lock-unlock';
 import ManagePatternsMenuItem from './manage-patterns-menu-item';
 import WelcomeGuideMenuItem from './welcome-guide-menu-item';
+import FindReplaceMenuItem from '../find-replace';
 import EditPostPreferencesModal from '../preferences-modal';
 
 const { MoreMenuPreferenceItem, ToolsMoreMenuGroup, ViewMoreMenuGroup } =
@@ -42,6 +43,7 @@ const MoreMenu = () => {
 			) }
 			<ToolsMoreMenuGroup>
 				<ManagePatternsMenuItem />
+				<FindReplaceMenuItem />
 				<WelcomeGuideMenuItem />
 			</ToolsMoreMenuGroup>
 			<EditPostPreferencesModal />
