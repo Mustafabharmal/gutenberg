@@ -218,6 +218,28 @@ class Tests_Blocks_Render_Post_Navigation_Link extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'has-background', $output );
 	}
 
+	public function test_previous_link_on_an_attachment_links_to_the_parent_post() {
+		$attachment_id = self::factory()->attachment->create_object(
+			array(
+				'file'        => 'image.jpg',
+				'post_parent' => self::$first_post_id,
+			)
+		);
+
+		$output = $this->render_block( $attachment_id, array( 'type' => 'previous' ) );
+
+		$this->assertStringContainsString( 'href="' . get_permalink( self::$first_post_id ) . '"', $output );
+	}
+
+	public function test_previous_link_on_an_unattached_attachment_is_not_rendered() {
+		$attachment_id = self::factory()->attachment->create_object( array( 'file' => 'image.jpg' ) );
+
+		$output = $this->render_block( $attachment_id, $this->styled_attributes() );
+
+		$this->assertStringNotContainsString( '<a ', $output, 'The block should not link to the current attachment.' );
+		$this->assertStringNotContainsString( 'style=', $output );
+	}
+
 	public function test_null_from_the_post_link_filter_omits_the_styles() {
 		add_filter( 'previous_post_link', '__return_null' );
 		$output = $this->render_block( self::$second_post_id, $this->styled_attributes() );

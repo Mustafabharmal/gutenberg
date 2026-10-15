@@ -106,7 +106,14 @@ function render_block_core_post_navigation_link( $attributes, $content ) {
 	 */
 	$get_link_function = "get_{$navigation_type}_post_link";
 
-	if ( ! empty( $attributes['taxonomy'] ) ) {
+	/*
+	 * On an attachment page, the previous link points to the parent post.
+	 * Unattached media has no parent, and core would link to the current
+	 * attachment instead, so no link is rendered.
+	 */
+	if ( 'previous' === $navigation_type && is_attachment() && ! get_post()->post_parent ) {
+		$content = '';
+	} elseif ( ! empty( $attributes['taxonomy'] ) ) {
 		$content = $get_link_function( $format, $link, true, '', $attributes['taxonomy'] );
 	} else {
 		$content = $get_link_function( $format, $link );
